@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Recommendations - Smart Agriculture{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo"><i class="fas fa-leaf"></i></div>
+                <div class="header-text">
+                    <h1>Crop Recommendations</h1>
+                    <p>Best crops based on selected soil type and current conditions</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="current-time">{{ current_time }}</div>
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="dashboard-grid">
+
+            <!-- Soil Selection -->
+            <div class="card soil-card">
+    <div class="card-header">
+        <h3>Select Soil Type</h3>
+        <div class="card-icon"><i class="fas fa-seedling"></i></div>
+    </div>
+    <div class="card-content">
+        <form method="POST">
+            <select name="soil_type" class="form-control">
+                <option value="">-- Select Soil Type --</option>
+                {% set soil_categories = ["Clayey", "Well-drained", "Loamy", "Sandy", "Medium fertility", "High organic", "Alluvial"] %}
+                {% for soil in soil_categories %}
+                    <option value="{{ soil }}" {% if soil == selected_soil %}selected{% endif %}>
+                        {{ soil }}
+                    </option>
+                {% endfor %}
+            </select>
+            <br>
+            <button type="submit" class="btn btn-success">Recommend Crops</button>
+        </form>
+    </div>
+</div>
+
+
+            <!-- Recommended Crops -->
+            <div class="card crop-card wide-card">
+                <div class="card-header">
+                    <h3>Recommended Crops</h3>
+                    <div class="card-icon"><i class="fas fa-leaf"></i></div>
+                </div>
+                <div class="card-content">
+                    {% if crops %}
+                        <ul class="crop-list">
+                            {% for crop in crops %}
+                                <li>
+                                    <strong>{{ crop["Crop"] }}</strong><br>
+                                    <small>Soil: {{ crop["Soil Type"] }} | Moisture: {{ crop["Soil Moisture"] }}</small><br>
+                                    <small>Temperature Range: {{ crop["Min Temp"] }} - {{ crop["Max temp"] }} °C</small><br>
+                                    <small>Water Requirement: {{ crop["Total Water ( mm )"] }} mm</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No crops found for this soil type and current conditions.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-buttons center-nav">
+            <a href="{{ url_for('dashboard') }}" class="nav-btn graphs-btn">⬅ Back to Dashboard</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

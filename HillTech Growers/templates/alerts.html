@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Alerts & Updates - Smart Agriculture{% endblock %}
+
+{% block content %}
+<div class="alerts-container">
+    <header class="alerts-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="{{ url_for('dashboard') }}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+                <div class="logo">
+                    <i class="fas fa-mountain"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Alerts & Updates</h1>
+                    <p>System Notifications & Status</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="alert-indicator">
+                    <i class="fas fa-bell"></i>
+                    <span class="alert-count">{{ alerts | selectattr('severity', 'equalto', 'high') | list | length }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="alerts-main">
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+                All Alerts <span class="tab-count">{{ alerts | length }}</span>
+            </button>
+            <button class="filter-tab" data-filter="irrigation">
+                Irrigation <span class="tab-count">{{ alerts | selectattr('category', 'equalto', 'irrigation') | list | length }}</span>
+            </button>
+            <button class="filter-tab" data-filter="weather">
+                Weather <span class="tab-count">{{ alerts | selectattr('category', 'equalto', 'weather') | list | length }}</span>
+            </button>
+            <button class="filter-tab" data-filter="temperature">
+                Temperature <span class="tab-count">{{ alerts | selectattr('category', 'equalto', 'temperature') | list | length }}</span>
+            </button>
+            <button class="filter-tab" data-filter="water">
+                Water <span class="tab-count">{{ alerts | selectattr('category', 'equalto', 'water') | list | length }}</span>
+            </button>
+            <button class="filter-tab" data-filter="system">
+                System <span class="tab-count">{{ alerts | selectattr('category', 'equalto', 'system') | list | length }}</span>
+            </button>
+        </div>
+        
+        <!-- Alerts List -->
+        <div class="alerts-list">
+            {% for alert in alerts %}
+            <div class="alert-card {{ alert.type }}-alert" data-category="{{ alert.category }}">
+                <div class="alert-icon">
+                    {% if alert.type == 'warning' %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                    {% elif alert.type == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="alert-content">
+                    <div class="alert-header">
+                        <h4>{{ alert.title }}</h4>
+                        <div class="alert-meta">
+                            <span class="alert-category">
+                                {% if alert.category == 'irrigation' or alert.category == 'water' %}
+                                    <i class="fas fa-tint"></i>
+                                {% elif alert.category == 'temperature' %}
+                                    <i class="fas fa-thermometer-half"></i>
+                                {% elif alert.category == 'weather' %}
+                                    <i class="fas fa-cloud"></i>
+                                {% elif alert.category == 'system' %}
+                                    <i class="fas fa-cog"></i>
+                                {% endif %}
+                                {{ alert.category | title }}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="alert-message">{{ alert.message }}</p>
+                    <div class="alert-footer">
+                        <span class="alert-time">
+                            <i class="fas fa-clock"></i>
+                            {{ alert.timestamp }}
+                        </span>
+                        <span class="alert-severity {{ alert.severity }}-priority">
+                            {{ alert.severity }} priority
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Summary Statistics -->
+        <div class="alert-summary">
+            <div class="summary-card high-priority">
+                <h4>High Priority</h4>
+                <p class="summary-number">{{ alerts | selectattr('severity', 'equalto', 'high') | list | length }}</p>
+                <p class="summary-text">Requires immediate attention</p>
+            </div>
+            <div class="summary-card medium-priority">
+                <h4>Medium Priority</h4>
+                <p class="summary-number">{{ alerts | selectattr('severity', 'equalto', 'medium') | list | length }}</p>
+                <p class="summary-text">Monitor closely</p>
+            </div>
+            <div class="summary-card system-status">
+                <h4>System Status</h4>
+                <p class="summary-number">Healthy</p>
+                <p class="summary-text">All systems operational</p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/alerts.js') }}"></script>
+{% endblock %}

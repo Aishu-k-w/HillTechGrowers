@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Agriculture{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-mountain"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Smart Agriculture Dashboard</h1>
+                    <p>Hilly Area Monitoring System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="current-time">{{ data.current_time }}</div>
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <main class="dashboard-main">
+        <div class="dashboard-grid">
+
+            <!-- Crop Recommendations Card -->
+            <div class="card crop-card">
+                <div class="card-header">
+                    <h3>Crop Recommendations</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="data-row">
+                        <span>Soil Moisture Category</span>
+                        <span class="value">{{ data.soil_category }}</span>
+                    </div>
+
+                    {% if data.crops %}
+                        <ul class="crop-list">
+                            {% for crop in data.crops %}
+                                <li>
+                                    <strong>{{ crop["Crop"] }}</strong>
+                                    <br>
+                                    <small>Water Need: {{ crop["Soil Moisture"] }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No matching crops found for current soil condition.</p>
+                    {% endif %}
+
+                    <div class="nav-buttons">
+                        <a href="{{ url_for('crops') }}" class="nav-btn graphs-btn">
+                            View All Crops
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soil Data Card -->
+            <div class="card soil-card">
+                <div class="card-header">
+                    <h3>Soil Data</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="data-row">
+                        <span>Moisture</span>
+                        <span class="value moisture-value">{{ data.soil.moisture }}%</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Temperature</span>
+                        <span class="value temp-value">{{ data.soil.temperature }}°C</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Nutrients</span>
+                        <span class="value nutrient-value">{{ data.soil.nutrients }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Card -->
+            <div class="card weather-card">
+                <div class="card-header">
+                    <h3>Weather Data</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="data-row">
+                        <span>Temperature</span>
+                        <span class="value">{{ data.weather.temperature }}°C</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Humidity</span>
+                        <span class="value">{{ data.weather.humidity }}%</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Rainfall</span>
+                        <span class="value">{{ data.weather.rainfall }}mm</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Wind Speed</span>
+                        <span class="value">{{ data.weather.wind_speed }} km/h</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crop Irrigation Card -->
+            <div class="card irrigation-card">
+                <div class="card-header">
+                    <h3>Crop Irrigation</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="data-row">
+                        <span>Schedule</span>
+                        <span class="value status-active">{{ data.irrigation.schedule }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Next Watering</span>
+                        <span class="value">{{ data.irrigation.next_watering }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Duration</span>
+                        <span class="value">{{ data.irrigation.duration }} min</span>
+                    </div>
+                    <div class="data-row">
+                        <span>Pressure</span>
+                        <span class="value">{{ data.irrigation.pressure }} bar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tank/Water Level -->
+            <div class="card tank-card">
+                <div class="card-header">
+                    <h3>Water Tank Level</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-water"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="tank-level-display">
+                        <div class="circular-progress">
+                            <div class="progress-circle" data-percentage="{{ data.tank_level }}">
+                                <span class="percentage">{{ data.tank_level }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tank-info">
+                        <p>Capacity: 5000L</p>
+                        <p>Available: {{ (5000 * data.tank_level / 100)|int }}L</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="card control-card">
+                <div class="card-header">
+                    <h3>Water Flow Control</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="control-status">
+                        <p>Current Status</p>
+                        <span id="flow-status" class="status-indicator status-stopped">STOPPED</span>
+                    </div>
+                    <div class="control-buttons">
+                        <button id="start-btn" class="control-btn start-btn">
+                            <i class="fas fa-play"></i>
+                            Start
+                        </button>
+                        <button id="stop-btn" class="control-btn stop-btn" disabled>
+                            <i class="fas fa-stop"></i>
+                            Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Card -->
+            <div class="card navigation-card">
+                <div class="card-header">
+                    <h3>Analytics</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p>View detailed analytics and trends</p>
+                    <div class="nav-buttons">
+                        <a href="{{ url_for('graphs') }}" class="nav-btn graphs-btn">
+                            View Graphs & Trends
+                        </a>
+                        <a href="{{ url_for('alerts') }}" class="nav-btn alerts-btn">
+                            Alerts & Updates
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize circular progress
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressCircle = document.querySelector('.progress-circle');
+        const percentage = progressCircle.dataset.percentage;
+        const circumference = 2 * Math.PI * 45; // radius = 45
+        const offset = circumference - (percentage / 100) * circumference;
+
+        const style = document.createElement('style');
+        style.textContent = `
+            .progress-circle::before {
+                stroke-dasharray: ${circumference};
+                stroke-dashoffset: ${offset};
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Graphs & Trends - Smart Agriculture{% endblock %}
+
+{% block content %}
+<div class="graphs-container">
+    <header class="graphs-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="{{ url_for('dashboard') }}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+                <div class="logo">
+                    <i class="fas fa-mountain"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Agricultural Analytics & Trends</h1>
+                    <p>Sikkim & Jorethang Hilly Cultivation Data</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="graphs-main">
+        <div class="graphs-grid">
+            <!-- Soil Moisture vs Time -->
+            <div class="graph-card">
+                <div class="graph-header">
+                    <h3>Soil Moisture vs Time</h3>
+                    <div class="graph-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                </div>
+                <div class="graph-content">
+                    <canvas id="soilMoistureChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Rainfall vs Irrigation Demand -->
+            <div class="graph-card">
+                <div class="graph-header">
+                    <h3>Rainfall vs Irrigation Demand</h3>
+                    <div class="graph-icon">
+                        <i class="fas fa-cloud-rain"></i>
+                    </div>
+                </div>
+                <div class="graph-content">
+                    <canvas id="rainfallIrrigationChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Crop Water Requirement vs Actual Irrigation -->
+            <div class="graph-card full-width">
+                <div class="graph-header">
+                    <h3>Crop Water Requirement vs Actual Irrigation Applied</h3>
+                    <div class="graph-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                </div>
+                <div class="graph-content">
+                    <canvas id="cropWaterChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h4>Avg Soil Moisture</h4>
+                <p class="summary-value">55%</p>
+                <p class="summary-desc">Optimal range: 40-70%</p>
+            </div>
+            <div class="summary-card">
+                <h4>Irrigation Efficiency</h4>
+                <p class="summary-value">95%</p>
+                <p class="summary-desc">Water usage optimization</p>
+            </div>
+            <div class="summary-card">
+                <h4>Weekly Rainfall</h4>
+                <p class="summary-value">68mm</p>
+                <p class="summary-desc">Natural water supply</p>
+            </div>
+            <div class="summary-card">
+                <h4>Crop Health Index</h4>
+                <p class="summary-value">92%</p>
+                <p class="summary-desc">Overall crop condition</p>
+            </div>
+        </div>
+        
+        <!-- Insights Section -->
+        <div class="insights-section">
+            <h3>Agricultural Insights for Hilly Cultivation</h3>
+            <div class="insights-grid">
+                <div class="insights-card positive">
+                    <h4>Optimal Conditions Achieved</h4>
+                    <ul>
+                        <li>Soil moisture maintained within optimal range</li>
+                        <li>Efficient water usage with 95% irrigation efficiency</li>
+                        <li>Cardamom and turmeric showing excellent growth</li>
+                        <li>Temperature conditions favorable for hill crops</li>
+                    </ul>
+                </div>
+                <div class="insights-card improvement">
+                    <h4>Areas for Improvement</h4>
+                    <ul>
+                        <li>Monitor soil moisture during dry periods</li>
+                        <li>Optimize irrigation timing for ginger cultivation</li>
+                        <li>Consider rainwater harvesting during monsoon</li>
+                        <li>Implement terracing for better water retention</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Chart data from Flask
+const soilMoistureData = {{ data.soil_moisture_time | tojson }};
+const rainfallIrrigationData = {{ data.rainfall_irrigation | tojson }};
+const cropWaterData = {{ data.crop_water | tojson }};
+
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}
